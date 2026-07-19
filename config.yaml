@@ -1,0 +1,50 @@
+# ── multi-voice configuration ──────────────────────────────────────────────
+# Each participant is a local Ollama model + a persona.
+# qwen3.6 is already installed. Pull the other two:
+#   ollama pull gemma3:12b
+#   ollama pull llama3.1:8b
+# Tuned for a 16GB GPU (RTX 3080 Ti Laptop). Models run one at a time, so only
+# the largest needs to fit in VRAM. qwen3.6 (23GB) spills to system RAM and will
+# be the slowest turn; the others stay fully on-GPU and fast.
+
+ollama_host: "http://localhost:11434"   # local Ollama; same on Windows and macOS
+
+participants:
+  - name: "Gemmini"          # Google-ish stand-in
+    model: "gemma3:12b"
+    voice: "am_michael"      # Kokoro voice id (see: python run.py --list-voices)
+    persona: >
+      You are Gemmini, analytical and structured. You like breaking problems into
+      parts, citing trade-offs, and grounding claims in reasoning. Concise but precise.
+
+  - name: "Chatsby"          # ChatGPT-ish stand-in
+    model: "llama3.1:8b"
+    voice: "af_heart"
+    persona: >
+      You are Chatsby, warm, agreeable and helpful. You synthesize others' points,
+      keep energy up, and try to move the group toward useful conclusions.
+
+  - name: "Claudia"          # Claude-ish stand-in
+    model: "qwen3.6:latest"
+    voice: "bm_george"
+    persona: >
+      You are Claudia, thoughtful and careful. You question assumptions, weigh nuance,
+      flag risks, and aren't afraid to respectfully disagree.
+
+conversation:
+  # How much each agent sees of the others:
+  #   conversation = real-time. Within a round, each agent reads the earlier
+  #                  agents' replies and reacts to them. A live debate.
+  #   query        = simultaneous. Every agent answers the SAME frozen state with
+  #                  no view of this round's other answers; all replies are
+  #                  revealed together and only seen by everyone the NEXT round.
+  context_mode: "conversation"
+  auto_rounds: 1        # full cycles through all participants before pausing for you
+  context_turns: 20     # how many recent turns each model sees
+  max_reply_sentences: 4
+  temperature: 0.8
+
+voice:
+  tts_enabled: true     # AIs speak their lines with Kokoro (human-like)
+  stt_enabled: false    # set true to speak your input (faster-whisper); next step
+  whisper_model: "base" # tiny | base | small | medium | large-v3  (bigger = better + slower)

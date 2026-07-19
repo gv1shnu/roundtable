@@ -1,0 +1,21 @@
+# Install into a Python 3.12 venv (3.14 lacks wheels for the ML/audio stack):
+#   py -3.12 -m venv .venv
+#   .venv\Scripts\activate           # Windows   (macOS: source .venv/bin/activate)
+#   pip install torch --index-url https://download.pytorch.org/whl/cu126   # GPU (Windows/RTX)
+#   pip install -r requirements.txt
+# On macOS, skip the torch line above — `pip install torch` (default) uses Metal/CPU.
+
+# Core (text mode)
+ollama>=0.3.0
+PyYAML>=6.0
+
+# Voice output (TTS) — human-like, GPU-accelerated
+kokoro>=0.7.16
+misaki[en]>=0.7.4
+soundfile>=0.12
+sounddevice>=0.4.6
+
+# Voice input (STT)
+faster-whisper>=1.0.0
+
+# torch is required by kokoro; install the CUDA build separately (see header).
